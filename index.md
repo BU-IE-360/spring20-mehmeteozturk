@@ -10,7 +10,7 @@ if the link above is a mess(which probably is)
 [script](files/ie360backup.txt)
 
 Homework 2-3
-[link](spring20-mehmeteozturk/files/hw 2-3/IE 360 Homework 2.htm)
+[link](files/hw 2-3/IE 360 Homework 2.htm)
 
 
-[script](spring20-mehmeteozturk/files/hw 2-3/script.R)
+[script](files/hw 2-3/script.R)
