@@ -13,6 +13,6 @@ Homework 2-3
 
 [report](files/hw2/IE360Homework2.htm)
 
-
+[word](files/hw2/IE360Homework2word.docx)
 
 [script](files/hw2/script.R)
