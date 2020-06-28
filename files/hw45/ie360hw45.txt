@@ -1,0 +1,316 @@
+metro=Metro_Interstate_Traffic_Volume_csv
+
+traindex=metro$date_time<"2018-01-01"
+testindex=metro$date_time>="2018-01-01"
+
+traffic=metro[traindex,]
+traffictest=metro[testindex,]
+
+
+require(data.table)
+
+colday=traffic$holiday=="Columbus Day"
+traffic2=traffic
+date=traffic2$date_time[colday]
+traffic2$date_time==date[1]
+date
+
+amele=data.table()
+amele$date_time=date
+amele$holiday="Columbus Day"
+merge(traffic2,amele,by="date_time")
+holidaystuff$merger=day(holidaystuff$date_time),month(holidaystuff$date_time),year(holidaystuff$date_time)
+
+
+library(forecast)
+noholi=traffic
+noholi$holiday=NULL
+unique(noholi$weather_description)
+noholi$weather_description=as.factor(noholi$weather_description)
+levels(noholi$weather_description)
+unique(noholi$weather_main)
+noholi$weather_main=as.factor(noholi$weather_main)
+noholi$lag1=noholi$traffic_volume[-(1),]
+noholimess=noholi[2:40252,]
+noholimess=noholi
+install.packages("Hmisc")
+library(Hmisc)
+noholimess$lag1=noholi$traffic_volume[-1]
+noholilag=noholimess
+noholimess$lag1=Lag(noholimess$traffic_volume,shift = 1)
+noholimess$lag24=Lag(noholimess$traffic_volume,shift=24)
+traffictest3=traffictest2
+traffictest2$lag1=Lag(traffictest2$traffic_volume,shift = 1)
+traffictest2$lag24=Lag(traffictest2$traffic_volume,shift = 24)
+metro$lag24=Lag(metro$traffic_volume,shift = 24)
+traffictest2$lag1[1]=2731
+noholimess$lag1=lag(noholimess$traffic_volume,-1)
+noholimess
+str(noholimess)
+library(lubridate)
+noholimess
+noholimess$day=as.factor(day(noholimess$date_time))
+noholimess$month=as.factor(month(noholimess$date_time))
+noholimess$hour=as.factor(hour(noholimess$date_time))
+
+
+
+traffictest2$day=as.factor(day(traffictest2$date_time))
+traffictest2$month=as.factor(month(traffictest2$date_time))
+traffictest2$hour=as.factor(hour(traffictest2$date_time))
+
+pairs(noholimess)
+noholimess$temp=noholimess$temp-30
+noholimess$lagtemp24=Lag(noholimess$temp,shift = 24)
+traffictest2$lagtemp24=Lag(traffictest2$temp,shift = 24)
+traffictest2$lagtemp24[1:24]=noholimess$temp[40229:40252]
+
+noholimess$lagwthrm24=Lag(noholimess$weather_main,shift = 24)
+traffictest2$lagwthrm24=Lag(traffictest2$weather_main,shift = 24)
+traffictest2$lagwthrm24[1:24]=noholimess$weather_main[40229:40252]
+
+noholimess$lagwthrd24=Lag(noholimess$weather_description,shift = 24)
+traffictest2$lagwthrd24=Lag(traffictest2$weather_description,shift = 24)
+traffictest2$lagwthrd24[1:24]=noholimess$weather_description[40229:40252]
+
+noholimess$lagcloud24=Lag(noholimess$clouds_all,shift = 24)
+traffictest2$lagcloud24=Lag(traffictest2$clouds_all,shift = 24)
+traffictest2$lagcloud24[1:24]=noholimess$clouds_all[40229:40252]
+
+#1
+
+
+
+trafficlm1=lm(traffic_volume~lagtemp24+lagcloud24,data = noholimess)
+trafficlm1
+
+trafficlm2=lm(traffic_volume~lagtemp24+lagcloud24+lagwthrd24,data = noholimess)
+trafficlm2
+
+trafficlm3=lm(traffic_volume~day+month+hour,data = noholimess)
+trafficlm3
+
+trafficlm4=lm(traffic_volume~lag24,data = noholimess)
+trafficlm4
+
+trafficlm5=lm(traffic_volume~lag24+day+hour+month,data = noholimess)
+trafficlm5
+
+trafficlm6=lm(traffic_volume~lag24+day+hour+month+lagtemp24,data = noholimess)
+trafficlm6
+
+traffictest2=traffictest
+trafficdata=traffictest2$traffic_volume
+
+traffictest2$lag24[1:24]=noholimess$traffic_volume[40229:40252]
+
+
+trafficforecast=data.table()
+
+trafficforecast$day[1:24]=as.factor("1")
+trafficforecast$day=as.factor(trafficforecast$day)
+
+trafficforecast$hour[1:24]=traffictest2$hour[7745:7768]
+trafficforecast$hour[1]=0
+trafficforecast$hour=as.factor(trafficforecast$hour)
+trafficforecast$month=10
+trafficforecast$month=as.factor(trafficforecast$month)
+trafficforecast$lagtemp24=traffictest2$temp[7929:7952]
+trafficforecast$lag24=traffictest2$traffic_volume[7929:7952]
+
+trafficforecast$lagcloud24=traffictest2$clouds_all[7929:7952]
+trafficforecast$lagwthrd24=traffictest2$weather_description[7929:7952]
+
+
+predicted=predict.lm(trafficlm1,newdata = traffictest2)
+predicted2=predict(trafficlm2,newdata = traffictest2)
+predicted3=predict(trafficlm3,newdata = traffictest2)
+predicted4=predict(trafficlm4,newdata = traffictest2)
+predicted5=predict(trafficlm5,newdata = traffictest2)
+predicted6=predict(trafficlm6,newdata = traffictest2)
+
+value1=predict(trafficlm1,newdata = trafficforecast)
+value1
+
+value2=predict(trafficlm2,newdata = trafficforecast)
+value2
+
+value3=predict(trafficlm3,newdata = trafficforecast)
+value3
+
+value4=predict(trafficlm4,newdata = trafficforecast)
+value4
+
+value5=predict(trafficlm5,newdata = trafficforecast)
+value5
+
+value6=predict(trafficlm6,newdata = trafficforecast)
+value6
+
+avelm=(value1+value2+value3+value4+value5+value6)/6
+avelm
+
+predicted5[1]
+
+rmse1=mean(sqrt((predicted-traffictest2$traffic_volume)^2))
+rmse1
+
+rmse2=mean(sqrt((predicted2-traffictest2$traffic_volume)^2))
+rmse2
+           
+rmse3=mean(sqrt((predicted3-traffictest2$traffic_volume)^2))
+rmse3
+
+rmse4=mean(sqrt((predicted4-traffictest2$traffic_volume)^2))
+rmse4
+
+rmse5=mean(sqrt((predicted5-traffictest2$traffic_volume)^2))
+rmse5
+
+rmse6=mean(sqrt((predicted6-traffictest2$traffic_volume)^2))
+rmse6
+
+acf(noholimess$temp,plot = T,lag.max = 100)
+
+temper=noholimess$temp
+temper=temper-273
+acf(temper)
+
+#2
+library(zoo)
+library(xts)
+ts_traffic=data.table()
+ts_traffic$date=traffic2$date_time
+
+ts_traffic$volume=traffic2$traffic_volume
+xts_traffic=as.xts(ts_traffic)
+ts_traffic=ts(xts_traffic$volume,frequency=8760)
+ts.plot(ts_traffic)
+
+dctraffic=decompose(ts_traffic)
+plot(dctraffic)
+
+dctraffic$trend[1:4380]=dctraffic$trend[4381]
+dctraffic$trend[35872]
+dctraffic$trend[35873:40252]=dctraffic$trend[35872]
+
+dtrdse=ts_traffic-dctraffic$trend-dctraffic$seasonal
+seasonalez=data.table()
+seasonalez$co=dctraffic$seasonal
+addseason=
+
+plot(dtrdse)
+
+acf(ts_traffic)
+
+plot(dctraffic$trend)
+
+#train
+
+arimamodel1=arima(dtrdse,order = c(0,0,1))
+arimamodel1
+
+arimamodel2=arima(dtrdse,order = c(0,1,0))
+arimamodel2
+
+arimamodel3=arima(dtrdse,order = c(1,0,0))
+arimamodel3
+
+arimamodel4=arima(dtrdse,order = c(1,0,1))
+arimamodel4
+
+arimamodel5=arima(dtrdse,order = c(5,0,1))
+arimamodel5
+#the best
+
+arimamodel6=arima(dtrdse,order = c(5,0,1),xreg = noholimess$lag24)
+arimamodel6
+
+
+
+summary(arimamodel1)
+
+#predict
+trafficpredict=data.table()
+trafficpredict$date=metro$date_time
+trafficpredict$traffic=metro$traffic_volume
+
+xts_traffic2=as.xts(trafficpredict)
+trafficpredict=ts(xts_traffic2$traffic,frequency=8760)
+
+dctrafficpredict=decompose(trafficpredict)
+plot(dctrafficpredict)
+dctrafficpredict$trend[1:4380]=dctrafficpredict$trend[4381]
+dctrafficpredict$trend[43825:48204]=dctrafficpredict$trend[43824]
+plot(dctrafficpredict$trend)
+
+dttrafficpredict=trafficpredict-dctrafficpredict$seasonal-dctrafficpredict$trend
+
+arimamodelpr1=arima(dttrafficpredict,order = c(0,0,1))
+arimamodelpr1
+
+arimamodelpr2=arima(dttrafficpredict,order = c(0,1,0))
+arimamodelpr2
+
+arimamodelpr3=arima(dttrafficpredict,order = c(1,0,0))
+arimamodelpr3
+
+arimamodelpr4=arima(dttrafficpredict,order = c(1,0,1))
+arimamodelpr4
+
+arimamodelpr5=arima(dttrafficpredict,order = c(5,0,1))
+arimamodelpr5
+
+arimamodelpr6=arima(dttrafficpredict,order = c(5,0,1),xreg = metro$lag24)
+arimamodelpr6
+
+arimapredict1=forecast(arimamodelpr1,h=24)
+arimapredict1
+
+arimapredict2=forecast(arimamodelpr2,h=24)
+arimapredict2
+
+arimapredict3=forecast(arimamodelpr3,h=24)
+arimapredict3
+
+arimapredict4=forecast(arimamodelpr4,h=24)
+arimapredict4
+
+arimapredict5=forecast(arimamodelpr5,h=24)
+arimapredict5
+
+arimapredict6=forecast(arimamodelpr6,h=24,xreg = metro$lag24)
+arimapredict6
+
+sumfinal=data.table()
+sumfinal$tr=dctrafficpredict$seasonal
+last(dctrafficpredict$seasonal)
+
+finalarima1=data.table()
+finalarima1=arimapredict1$mean+dctrafficpredict$seasonal[4405:4428]+last(dctrafficpredict$trend)
+finalarima1
+
+finalarima2=data.table()
+finalarima2=arimapredict2$mean+dctrafficpredict$seasonal[4405:4428]+last(dctrafficpredict$trend)
+finalarima2
+
+finalarima3=data.table()
+finalarima3=arimapredict3$mean+dctrafficpredict$seasonal[4405:4428]+last(dctrafficpredict$trend)
+finalarima3
+
+finalarima4=data.table()
+finalarima4=arimapredict4$mean+dctrafficpredict$seasonal[4405:4428]+last(dctrafficpredict$trend)
+finalarima4
+
+finalarima5=data.table()
+finalarima5=arimapredict5$mean+dctrafficpredict$seasonal[4405:4428]+last(dctrafficpredict$trend)
+finalarima5
+
+finalarima6=data.table()
+finalarima6=arimapredict6$mean+dctrafficpredict$seasonal[4405:4428]+last(dctrafficpredict$trend)
+finalarima6
+
+avearima=(finalarima1+finalarima2+finalarima3+finalarima4+finalarima5)/5
+avearima
+avelm
+(avearima*5+avelm*6)/11
