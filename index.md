@@ -21,6 +21,6 @@ Homework 4-5
 
 [report](files/hw45/hw45report.htm)
 
-[word] (files/hw45/hw45report.docx) i heavily suggest word as the html is full of question marks caused by text coding of browser i guess.
+[word](files/hw45/hw45report.docx) i heavily suggest word as the html is full of question marks caused by text coding of browser i guess.
 
 [script](files/hw45/ie360hw45.txt)
