@@ -27,9 +27,9 @@ Homework 4-5
 
 final project
 
-[report](files/ie360project/Rapor360proje.htm)
+[report](files/ie360project/Rapor360proje.htm) (i am deeply sorry for the look of html)
 
-[report at word format](files/ie360project/Rapor360proje.docx)
+[report at word format](files/ie360project/Rapor360proje.docx) (this however looks fine)
 
 [R format](files/ie360project/rscript.R)
 
