@@ -30,3 +30,7 @@ final project
 [report](files/ie360project/Rapor360proje.htm)
 
 [report at word format](files/ie360project/Rapor360proje.docx)
+
+[R format](files/ie360project/rscript.R)
+
+[txt format](files/ie360project/txtscript.txt)
